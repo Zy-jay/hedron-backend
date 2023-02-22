@@ -18,5 +18,6 @@ const Loan = new mongoose.Schema({
   liquidationStart: { type: Number, required: false },
   loanStart: { type: Number, required: true },
   blockNumber: { type: Number, required: true },
+  lockedDay: { type: Number, required: true },
 })
 export default mongoose.model("Loan", Loan)

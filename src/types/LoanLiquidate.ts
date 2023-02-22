@@ -20,5 +20,6 @@ const Loan_liquidate = new mongoose.Schema({
   liquidator: { type: String, required: true },
   itemType: { type: Number, required: true },
   blockNumber: { type: Number, required: true },
+  lockedDay: { type: Number, required: true },
 })
 export default mongoose.model("Loan_liquidate", Loan_liquidate)

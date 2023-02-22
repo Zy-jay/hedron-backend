@@ -60,6 +60,8 @@ async function updateLoansLiquidate() {
             hdrnBonus: 0,
             liquidationId: Number(item.event.returnValues.liquidationId),
             itemType: 1,
+            blockNumber: item.event.blockNumber,
+            lockedDay: Number(item.share.lockedDay),
           })
           await loanLiquidate.save()
         } catch (err) {
@@ -129,6 +131,7 @@ async function updateLoans() {
           // liquidationId: Number(item.event.returnValues.liquidationId),
           itemType: 0,
           blockNumber: item.eventData.blockNumber,
+          lockedDay: item.shareList.stake.lockedDay,
         })
         await loan.save()
       } catch (err) {
