@@ -28,6 +28,7 @@
     "@enzoferey/multicall-nitro": "^0.1.1",
     "@sentry/node": "7.18.0",
     "axios": "^1.1.3",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "16.0.3",
     "ethers": "^6.0.4",
@@ -71,5 +72,4 @@
   "tap": {
     "check-coverage": false
   }
-  
 }
