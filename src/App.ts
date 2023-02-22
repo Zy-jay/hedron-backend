@@ -15,6 +15,8 @@ import { ethwEthersProvaider } from "./utils/getProvider"
 import { sleep } from "./utils/sleep"
 // import LoanLiquidate from "./types/LoanLiquidate"
 
+let lastBlockNumber = 0
+
 async function updateLoansLiquidate() {
   try {
     const hexCurrentDay = await getHexCurrentDay()
@@ -173,6 +175,7 @@ export async function App() {
     try {
       ethwEthersProvaider.on("block", async (blockNumber: number) => {
         console.log("new block " + blockNumber)
+        lastBlockNumber = blockNumber
         await hedronContractWeb3
           .getPastEvents("LoanLiquidateExit", {
             filter: {},
@@ -206,6 +209,11 @@ export async function App() {
   setInterval(async () => {
     const listenerCount = await ethwEthersProvaider.listenerCount("block")
     // console.log("listenerCount:", listenerCount)
+    const currentBlock = await ethwEthersProvaider.getBlockNumber()
+    if (lastBlockNumber + 1 < currentBlock) {
+      console.log("removeAllListeners...")
+      ethwEthersProvaider.removeAllListeners()
+    }
     if (!listenerCount && listenerCount === 0) {
       subscribeOn()
       console.log("Restart: subscribeOn", listenerCount)
