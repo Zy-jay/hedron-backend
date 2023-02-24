@@ -1,7 +1,7 @@
 {
-  "name": "hello-world-node",
+  "name": "hedron-dot",
   "version": "1.0.0",
-  "description": "Bidding Bot Demo",
+  "description": "hedron-dot",
   "license": "MIT",
   "main": "index.ts",
   "directories": {
