@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "start": "nodemon index.ts",
+    "start": "nodemon ./build/index.js",
     "check-types:incremental": "yarn check-types --incremental",
     "create-wallet": "ts-node --project tsconfig.json src/createWallet.ts",
     "eslint:check": "NODE_OPTIONS='--max_old_space_size=8192' eslint . --max-warnings 0 --ext .js,.ts",
