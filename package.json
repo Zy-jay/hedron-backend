@@ -8,18 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "check-types": "tsc --noEmit",
-    "start": "nodemon ./src/index.ts",
-    "check-types:incremental": "yarn check-types --incremental",
-    "create-wallet": "ts-node --project tsconfig.json src/createWallet.ts",
-    "eslint:check": "NODE_OPTIONS='--max_old_space_size=8192' eslint . --max-warnings 0 --ext .js,.ts",
-    "eslint:fix": "yarn eslint:check --fix",
-    "lint": "concurrently \"yarn check-types\" \"yarn eslint:check\" \"yarn prettier:check\" \"yarn prettier:package.json:check\"",
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
-    "prettier:package.json:check": "yarn prettier-package-json --list-different",
-    "prettier:package.json:fix": "prettier-package-json --write"
+    "start": "./node_modules/.bin/netlify-lambda serve src",
+    "build": "./node_modules/.bin/netlify-lambda build src"
   },
   "dependencies": {
     "@enzoferey/multicall-nitro": "^0.1.1",
