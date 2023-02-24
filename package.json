@@ -8,21 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "bidding-bot": "ts-node --project tsconfig.json biddingBot.ts",
-    "get-stats": "ts-node --project tsconfig.json ./src/utils/getCollectionSlugAndStats.ts",
-    "action": "ts-node --project tsconfig.json ./src/actions/main.ts",
-    "build": "tsc -p tsconfig.build.json",
-    "check-types": "tsc --noEmit",
-    "dev": "nodemon index.ts",
-    "check-types:incremental": "yarn check-types --incremental",
-    "create-wallet": "ts-node --project tsconfig.json src/createWallet.ts",
-    "eslint:check": "NODE_OPTIONS='--max_old_space_size=8192' eslint . --max-warnings 0 --ext .js,.ts",
-    "eslint:fix": "yarn eslint:check --fix",
-    "lint": "concurrently \"yarn check-types\" \"yarn eslint:check\" \"yarn prettier:check\" \"yarn prettier:package.json:check\"",
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
-    "prettier:package.json:check": "yarn prettier-package-json --list-different",
-    "prettier:package.json:fix": "prettier-package-json --write"
+    "start": "nodemon index.ts"
   },
   "dependencies": {
     "@enzoferey/multicall-nitro": "^0.1.1",
