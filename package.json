@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "netlify-lambda build src",
+    "build": "tsc -p tsconfig.build.json",
     "start": "nodemon index.ts",
     "check-types:incremental": "yarn check-types --incremental",
     "create-wallet": "ts-node --project tsconfig.json src/createWallet.ts",
