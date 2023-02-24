@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'Hedron'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D9E92167A5B24599A879793730313903 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_91239752FE764AB7B20D761B84D04425 }}
           package: .
