@@ -1,5 +1,8 @@
-dist
+
 node_modules
 .nyc_output
 yarn-error.log
 .env
+
+# Local Netlify folder
+.netlify
