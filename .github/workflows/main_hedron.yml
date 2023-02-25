@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'production'
+      name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -51,6 +51,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'Hedron'
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_def1098b07ed4403ab562320ae5b6853 }}
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2E56E7D0A755459183F73C65794962CE }}
           package: .
