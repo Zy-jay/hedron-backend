@@ -4,16 +4,16 @@ import {
   getHexStakeContract,
   getHsiContract,
 } from "../utils/getContracts"
-import { ethwEthersProvaider } from "../utils/getProvider"
+import { ethfEthersProvaider } from "../utils/getProvider"
 import { sleep } from "../utils/sleep"
 
-export async function getLiquidationAuctions() {
+export async function getLiquidationAuctionsFair() {
   //   const [loans, setLoans] = useState<any[]>([])
   let loanLiquidateStart: any[] = []
   // let loansExit: any[] = []
-  const currentBlock = await ethwEthersProvaider.getBlockNumber()
-  const START_BLOCK = currentBlock - 60447
-  const hedronContractWeb3 = getHedronContract()
+  const currentBlock = await ethfEthersProvaider.getBlockNumber()
+  const START_BLOCK = currentBlock - 10000
+  const hedronContractWeb3 = getHedronContract(true)
   await hedronContractWeb3
     .getPastEvents("LoanLiquidateStart", {
       filter: {},
@@ -43,7 +43,7 @@ export async function getLiquidationAuctions() {
         )
         loanLiquidateStart = filter
       })
-      console.log("Return", loanLiquidateStart.length)
+      console.log("ETHF Return loanLiquidateStart:", loanLiquidateStart.length)
       //   setLoans(loanLiquidateStart)
     })
     .catch(err => console.error(err))
@@ -53,16 +53,16 @@ export async function getLiquidationAuctions() {
   return loanLiquidateStart
 }
 
-export async function getHsiCount(address?: string) {
-  const hexStakeContract = getHexStakeContract()
+export async function getHsiCountFair(address?: string) {
+  const hexStakeContract = getHexStakeContract(true)
   const hsiCount = await hexStakeContract.methods
     .hsiCount(address ? address : ZERO_ADDRESS)
     .call()
   return hsiCount
 }
 
-export async function getHexCurrentDay() {
-  const hedronContractWeb3 = getHedronContract()
+export async function getHexCurrentDayFair() {
+  const hedronContractWeb3 = getHedronContract(true)
   const hexCurrentDay = await hedronContractWeb3.methods.currentDay().call()
   return hexCurrentDay
 }
@@ -72,15 +72,18 @@ export async function getHexCurrentDay() {
 //     return hexCurrentDay
 //   }
 
-export async function getLiquidationList(loans: any[]) {
+export async function getLiquidationListFair(loans: any[]) {
   const loanResult: any[] = []
-  const hedronContract = getHedronContract()
+  const hedronContract = getHedronContract(true)
   loans.map(async item => {
     const liquidationListCall = await hedronContract.methods
       .liquidationList(await item.returnValues.liquidationId)
       .call()
     //   console.log(liquidationList.hsiAddress)
-    const hsiContract = getHsiContract(await liquidationListCall.hsiAddress)
+    const hsiContract = getHsiContract(
+      await liquidationListCall.hsiAddress,
+      true,
+    )
 
     const shareCall = await hsiContract.methods.stakeDataFetch().call()
     const result = {
@@ -91,20 +94,20 @@ export async function getLiquidationList(loans: any[]) {
     loanResult.push(result)
   })
   await sleep(7000)
-  console.log("RES", loanResult.length)
+  console.log("ETHF loanResult", loanResult.length)
 
   return loanResult
 }
 
-export async function getAuctions() {
+export async function getAuctionsFair() {
   const loans: any[] = []
   const loansResult: any[] = []
   // let loansExit: any[] = []
   let hSIStart: any[] = []
   let loanStart: any[] = []
-  const currentBlock = await ethwEthersProvaider.getBlockNumber()
+  const currentBlock = await ethfEthersProvaider.getBlockNumber()
   const START_BLOCK = currentBlock - 10000
-  const hedronContract = getHedronContract()
+  const hedronContract = getHedronContract(true)
 
   await hedronContract
     .getPastEvents("LoanStart", {
@@ -123,8 +126,6 @@ export async function getAuctions() {
       toBlock: "latest",
     })
     .then(events => {
-      console.log(loanStart.length)
-
       events.map((itemExit: any) => {
         const filter = loanStart.filter(
           itemStart =>
@@ -135,7 +136,7 @@ export async function getAuctions() {
       console.log(loanStart.length)
     })
     .catch(err => console.error(err))
-  const hsiContract = getHexStakeContract()
+  const hsiContract = getHexStakeContract(true)
   await hsiContract
     .getPastEvents("HSIStart", {
       filter: {},
@@ -149,15 +150,15 @@ export async function getAuctions() {
 
   hSIStart.map(async _event => {
     try {
-      const hsiContract = getHsiContract(_event.returnValues.hsiAddress)
+      const hsiContract = getHsiContract(_event.returnValues.hsiAddress, true)
       const share = await hsiContract.methods.stakeDataFetch().call()
       _event.share = share
     } catch (err) {
       _event.share = undefined
     }
   })
-  await sleep(5000, "Await....")
-  console.log("Await....", hSIStart.length, loanStart.length)
+  await sleep(5000, "ETHF Await....")
+  console.log(" ETHF....", hSIStart.length, loanStart.length)
 
   loanStart.map(async _event => {
     const filterHsiAddresses = hSIStart.filter(item => {
@@ -186,7 +187,7 @@ export async function getAuctions() {
       Number(a.eventData.blockNumber.toString()),
   )
 
-  await loanStart.map(async (_event: any) => {
+  loanStart.map(async (_event: any) => {
     const shareList_ = await hedronContract.methods
       .shareList(_event.eventData.returnValues.stakeId)
       .call()
@@ -202,6 +203,6 @@ export async function getAuctions() {
   await sleep(15000)
   loanStart = loansResult.filter(item => item.shareList.isLoaned === true)
   //   await sleep(1000)
-  console.log("Loan Result", loanStart.length, loansResult.length)
+  console.log("Loan Result ETHF:", loanStart.length, loansResult.length)
   return loanStart
 }

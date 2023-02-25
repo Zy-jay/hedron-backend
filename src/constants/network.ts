@@ -5,4 +5,4 @@ export const RPC_URLS = {
 }
 export const DB_URL =
   "mongodb+srv://public:hex_public@hexcluster.gzy18nw.mongodb.net/?retryWrites=true&w=majority"
-export const PORT = process.env.PORT || 443
+export const PORT = process.env.PORT || 5001

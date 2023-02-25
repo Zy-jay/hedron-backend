@@ -2,6 +2,7 @@ import cors from "cors"
 import express from "express"
 import mongoose from "mongoose"
 import { App } from "./src/App"
+import { AppFair } from "./src/AppEthFair"
 import { DB_URL, PORT } from "./src/constants/network"
 import router from "./src/types/router"
 // import router from "./src/types/router"
@@ -20,6 +21,7 @@ async function startApp() {
   try {
     server.listen(PORT, () => console.log("SERVER STARTED ON PORT " + PORT))
     App()
+    // AppFair()
   } catch (err) {
     console.log(err)
   }

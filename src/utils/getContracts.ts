@@ -6,10 +6,10 @@ import {
   HEXS_STAKE_MANAGER_ADDRESS,
 } from "../constants/addresses"
 import { RPC_URLS } from "../constants/network"
-import { ethwEthersProvaider } from "./getProvider"
+import { ethfEthersProvaider, ethwEthersProvaider } from "./getProvider"
 
-export function getHexStakeContract() {
-  const web3 = new Web3(RPC_URLS.ETHW)
+export function getHexStakeContract(fair?: boolean) {
+  const web3 = new Web3(fair ? RPC_URLS.ETHF : RPC_URLS.ETHW)
   const hexStakeContract = new web3.eth.Contract(
     [
       {
@@ -612,8 +612,8 @@ export function getHexStakeContract() {
   return hexStakeContract
 }
 
-export function getHsiContract(address: string) {
-  const web3 = new Web3(RPC_URLS.ETHW)
+export function getHsiContract(address: string, fair?: boolean) {
+  const web3 = new Web3(fair ? RPC_URLS.ETHW : RPC_URLS.ETHW)
   const hsiContract = new web3.eth.Contract(
     [
       {
@@ -756,11 +756,11 @@ export function getHsiContract(address: string) {
   return hsiContract
 }
 
-export function getHedronContract(ether?: boolean) {
+export function getHedronContract(fair?: boolean, ether?: boolean) {
   const etherContract = new ethers.Contract(
     HEDRON_ADDRESS,
     HEDRON_ABI,
-    ethwEthersProvaider,
+    fair ? ethfEthersProvaider : ethwEthersProvaider,
   )
   const web3 = new Web3(RPC_URLS.ETHW)
   const hedronContractWeb3 = new web3.eth.Contract(
@@ -1370,144 +1370,144 @@ export function getHedronContract(ether?: boolean) {
   return ether ? etherContract : hedronContractWeb3
 }
 
-export const getHsiContracts = (address: string) => {
-  const web3 = new Web3(RPC_URLS.ETHW)
-  return new web3.eth.Contract(
-    [
-      {
-        inputs: [
-          { internalType: "uint256", name: "stakeLength", type: "uint256" },
-        ],
-        name: "create",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "destroy",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "goodAccounting",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [
-          { internalType: "address", name: "hexAddress", type: "address" },
-        ],
-        name: "initialize",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "share",
-        outputs: [
-          {
-            components: [
-              { internalType: "uint40", name: "stakeId", type: "uint40" },
-              { internalType: "uint72", name: "stakeShares", type: "uint72" },
-              { internalType: "uint16", name: "lockedDay", type: "uint16" },
-              { internalType: "uint16", name: "stakedDays", type: "uint16" },
-            ],
-            internalType: "struct HEXStakeMinimal",
-            name: "stake",
-            type: "tuple",
-          },
-          { internalType: "uint16", name: "mintedDays", type: "uint16" },
-          { internalType: "uint8", name: "launchBonus", type: "uint8" },
-          { internalType: "uint16", name: "loanStart", type: "uint16" },
-          { internalType: "uint16", name: "loanedDays", type: "uint16" },
-          { internalType: "uint32", name: "interestRate", type: "uint32" },
-          { internalType: "uint8", name: "paymentsMade", type: "uint8" },
-          { internalType: "bool", name: "isLoaned", type: "bool" },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "stakeDataFetch",
-        outputs: [
-          {
-            components: [
-              { internalType: "uint40", name: "stakeId", type: "uint40" },
-              { internalType: "uint72", name: "stakedHearts", type: "uint72" },
-              { internalType: "uint72", name: "stakeShares", type: "uint72" },
-              { internalType: "uint16", name: "lockedDay", type: "uint16" },
-              { internalType: "uint16", name: "stakedDays", type: "uint16" },
-              { internalType: "uint16", name: "unlockedDay", type: "uint16" },
-              { internalType: "bool", name: "isAutoStake", type: "bool" },
-            ],
-            internalType: "struct HEXStake",
-            name: "",
-            type: "tuple",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            components: [
-              {
-                components: [
-                  { internalType: "uint40", name: "stakeId", type: "uint40" },
-                  {
-                    internalType: "uint72",
-                    name: "stakeShares",
-                    type: "uint72",
-                  },
-                  { internalType: "uint16", name: "lockedDay", type: "uint16" },
-                  {
-                    internalType: "uint16",
-                    name: "stakedDays",
-                    type: "uint16",
-                  },
-                ],
-                internalType: "struct HEXStakeMinimal",
-                name: "_stake",
-                type: "tuple",
-              },
-              { internalType: "uint256", name: "_mintedDays", type: "uint256" },
-              {
-                internalType: "uint256",
-                name: "_launchBonus",
-                type: "uint256",
-              },
-              { internalType: "uint256", name: "_loanStart", type: "uint256" },
-              { internalType: "uint256", name: "_loanedDays", type: "uint256" },
-              {
-                internalType: "uint256",
-                name: "_interestRate",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "_paymentsMade",
-                type: "uint256",
-              },
-              { internalType: "bool", name: "_isLoaned", type: "bool" },
-            ],
-            internalType: "struct ShareCache",
-            name: "_share",
-            type: "tuple",
-          },
-        ],
-        name: "update",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ],
-    address,
-  )
-}
+// export const getHsiContracts = (address: string) => {
+//   const web3 = new Web3(RPC_URLS.ETHW)
+//   return new web3.eth.Contract(
+//     [
+//       {
+//         inputs: [
+//           { internalType: "uint256", name: "stakeLength", type: "uint256" },
+//         ],
+//         name: "create",
+//         outputs: [],
+//         stateMutability: "nonpayable",
+//         type: "function",
+//       },
+//       {
+//         inputs: [],
+//         name: "destroy",
+//         outputs: [],
+//         stateMutability: "nonpayable",
+//         type: "function",
+//       },
+//       {
+//         inputs: [],
+//         name: "goodAccounting",
+//         outputs: [],
+//         stateMutability: "nonpayable",
+//         type: "function",
+//       },
+//       {
+//         inputs: [
+//           { internalType: "address", name: "hexAddress", type: "address" },
+//         ],
+//         name: "initialize",
+//         outputs: [],
+//         stateMutability: "nonpayable",
+//         type: "function",
+//       },
+//       {
+//         inputs: [],
+//         name: "share",
+//         outputs: [
+//           {
+//             components: [
+//               { internalType: "uint40", name: "stakeId", type: "uint40" },
+//               { internalType: "uint72", name: "stakeShares", type: "uint72" },
+//               { internalType: "uint16", name: "lockedDay", type: "uint16" },
+//               { internalType: "uint16", name: "stakedDays", type: "uint16" },
+//             ],
+//             internalType: "struct HEXStakeMinimal",
+//             name: "stake",
+//             type: "tuple",
+//           },
+//           { internalType: "uint16", name: "mintedDays", type: "uint16" },
+//           { internalType: "uint8", name: "launchBonus", type: "uint8" },
+//           { internalType: "uint16", name: "loanStart", type: "uint16" },
+//           { internalType: "uint16", name: "loanedDays", type: "uint16" },
+//           { internalType: "uint32", name: "interestRate", type: "uint32" },
+//           { internalType: "uint8", name: "paymentsMade", type: "uint8" },
+//           { internalType: "bool", name: "isLoaned", type: "bool" },
+//         ],
+//         stateMutability: "view",
+//         type: "function",
+//       },
+//       {
+//         inputs: [],
+//         name: "stakeDataFetch",
+//         outputs: [
+//           {
+//             components: [
+//               { internalType: "uint40", name: "stakeId", type: "uint40" },
+//               { internalType: "uint72", name: "stakedHearts", type: "uint72" },
+//               { internalType: "uint72", name: "stakeShares", type: "uint72" },
+//               { internalType: "uint16", name: "lockedDay", type: "uint16" },
+//               { internalType: "uint16", name: "stakedDays", type: "uint16" },
+//               { internalType: "uint16", name: "unlockedDay", type: "uint16" },
+//               { internalType: "bool", name: "isAutoStake", type: "bool" },
+//             ],
+//             internalType: "struct HEXStake",
+//             name: "",
+//             type: "tuple",
+//           },
+//         ],
+//         stateMutability: "view",
+//         type: "function",
+//       },
+//       {
+//         inputs: [
+//           {
+//             components: [
+//               {
+//                 components: [
+//                   { internalType: "uint40", name: "stakeId", type: "uint40" },
+//                   {
+//                     internalType: "uint72",
+//                     name: "stakeShares",
+//                     type: "uint72",
+//                   },
+//                   { internalType: "uint16", name: "lockedDay", type: "uint16" },
+//                   {
+//                     internalType: "uint16",
+//                     name: "stakedDays",
+//                     type: "uint16",
+//                   },
+//                 ],
+//                 internalType: "struct HEXStakeMinimal",
+//                 name: "_stake",
+//                 type: "tuple",
+//               },
+//               { internalType: "uint256", name: "_mintedDays", type: "uint256" },
+//               {
+//                 internalType: "uint256",
+//                 name: "_launchBonus",
+//                 type: "uint256",
+//               },
+//               { internalType: "uint256", name: "_loanStart", type: "uint256" },
+//               { internalType: "uint256", name: "_loanedDays", type: "uint256" },
+//               {
+//                 internalType: "uint256",
+//                 name: "_interestRate",
+//                 type: "uint256",
+//               },
+//               {
+//                 internalType: "uint256",
+//                 name: "_paymentsMade",
+//                 type: "uint256",
+//               },
+//               { internalType: "bool", name: "_isLoaned", type: "bool" },
+//             ],
+//             internalType: "struct ShareCache",
+//             name: "_share",
+//             type: "tuple",
+//           },
+//         ],
+//         name: "update",
+//         outputs: [],
+//         stateMutability: "nonpayable",
+//         type: "function",
+//       },
+//     ],
+//     address,
+//   )
+// }
