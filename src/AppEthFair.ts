@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/default
+import { Interface } from "ethers"
 import mongoose from "mongoose"
+import HDRN_ABI from "./abis/hedron.json"
 import {
   getAuctionsFair,
   getHexCurrentDayFair,
@@ -21,7 +23,7 @@ async function updateLoansLiquidate() {
   try {
     const hexCurrentDay = await getHexCurrentDayFair()
     const loanLiquidateStart = await getLiquidationAuctionsFair()
-    await sleep(3000)
+    await sleep(7000)
     const hsiCount = await getHsiCountFair()
     console.log(
       "ETHF loanLiquidateStart:",
@@ -62,7 +64,7 @@ async function updateLoansLiquidate() {
             mintableHdrn: Number(
               (Number(await item.share.stakeShares) *
                 (hexCurrentDay - Number(item.share.lockedDay))) /
-                10 ** 8,
+                10 ** 9,
             ).toFixed(1),
             stakedHex: Number(item.share.stakedHearts),
             hdrnBonus: 0,
@@ -129,12 +131,12 @@ async function updateLoans() {
             (Number(item.shareList.stake.stakeShares) *
               (Number(item.shareList.stake.stakedDays) -
                 (hexCurrentDay - Number(item.shareList.stake.lockedDay)))) /
-            10 ** 8
+            10 ** 9
           ).toFixed(1),
           mintableHdrn: (
             (Number(item.shareList.stake.stakeShares) *
               (Number(item.shareList.stake.lockedDay) - hexCurrentDay)) /
-            10 ** 8
+            10 ** 9
           ).toFixed(1),
           stakedHex: Number(item.stake.stakedHearts),
           hdrnBonus: item.shareList.launchBonus,
@@ -162,12 +164,13 @@ async function updateLoans() {
 }
 
 export async function AppFair() {
-  updateLoans()
+  await updateLoans()
   const hsiCount = await getHsiCountFair()
   await sleep(1000)
   const loansLiquidation = await Loan_liquidate_fair.find()
   await sleep(1000)
   console.log(
+    "ETHF loans Liquidation:",
     loansLiquidation.length,
     Number(hsiCount),
     loansLiquidation.length != Number(hsiCount),
@@ -194,11 +197,46 @@ export async function AppFair() {
             fromBlock: blockNumber,
             toBlock: "latest",
           })
-          .then(events => {
+          .then(async events => {
             if (events.length > 0) {
-              updateLoansLiquidate()
+              await updateLoansLiquidate()
             }
           })
+        await hedronContractWeb3
+          .getPastEvents("LoanLiquidateBid", {
+            filter: {},
+            fromBlock: blockNumber,
+            toBlock: "latest",
+          })
+          .then(async events => {
+            if (events.length > 0) {
+              // eslint-disable-next-line for-direction
+              for (let i = 0; i < events.length; i++) {
+                console.log(
+                  "ETHF EVENT LoanLiquidateBid:",
+                  events[i].returnValues,
+                )
+                const transaction: any =
+                  await ethfEthersProvaider.getTransaction(
+                    events[i].transactionHash,
+                  )
+                const iface = new Interface(HDRN_ABI)
+                const data = transaction.data.toString()
+                const txData = iface.parseTransaction({ data })
+                console.log(Number(txData?.args[1]))
+                const doc = await Loan_liquidate_fair.findOne({
+                  stakeId: events[i].returnValues.stakeId,
+                })
+                doc &&
+                  ((doc.currentBid = Number(txData?.args[1])),
+                  (doc.liquidator = transaction.from))
+
+                await doc?.save()
+                // Loan_liquidate.findOneAndUpdate({}, {})
+              }
+            }
+          })
+
         await hedronContractWeb3
           .getPastEvents("LoanLiquidateStart", {
             filter: {},

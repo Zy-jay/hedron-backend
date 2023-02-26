@@ -3,6 +3,8 @@ import Web3 from "web3"
 import { RPC_URLS } from "../constants/network"
 
 const web3 = new Web3(RPC_URLS.ETHW)
+web3.eth.handleRevert = true
+
 const subscribedEvents: any = {}
 
 // const subscribeLogEvent = (

@@ -9,7 +9,12 @@ import { RPC_URLS } from "../constants/network"
 import { ethfEthersProvaider, ethwEthersProvaider } from "./getProvider"
 
 export function getHexStakeContract(fair?: boolean) {
-  const web3 = new Web3(fair ? RPC_URLS.ETHF : RPC_URLS.ETHW)
+  const provider = new Web3.providers.HttpProvider(
+    fair ? RPC_URLS.ETHF : RPC_URLS.ETHW,
+  )
+  const web3 = new Web3(provider)
+  web3.eth.handleRevert = true
+
   const hexStakeContract = new web3.eth.Contract(
     [
       {
@@ -613,7 +618,12 @@ export function getHexStakeContract(fair?: boolean) {
 }
 
 export function getHsiContract(address: string, fair?: boolean) {
-  const web3 = new Web3(fair ? RPC_URLS.ETHW : RPC_URLS.ETHW)
+  const provider = new Web3.providers.HttpProvider(
+    fair ? RPC_URLS.ETHF : RPC_URLS.ETHW,
+  )
+  const web3 = new Web3(provider)
+  web3.eth.handleRevert = true
+
   const hsiContract = new web3.eth.Contract(
     [
       {
@@ -762,7 +772,12 @@ export function getHedronContract(fair?: boolean, ether?: boolean) {
     HEDRON_ABI,
     fair ? ethfEthersProvaider : ethwEthersProvaider,
   )
-  const web3 = new Web3(RPC_URLS.ETHW)
+  const provider = new Web3.providers.HttpProvider(
+    fair ? RPC_URLS.ETHF : RPC_URLS.ETHW,
+  )
+  const web3 = new Web3(provider)
+  web3.eth.handleRevert = true
+
   const hedronContractWeb3 = new web3.eth.Contract(
     [
       {

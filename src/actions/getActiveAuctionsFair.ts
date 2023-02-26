@@ -8,16 +8,14 @@ import { ethfEthersProvaider } from "../utils/getProvider"
 import { sleep } from "../utils/sleep"
 
 export async function getLiquidationAuctionsFair() {
-  //   const [loans, setLoans] = useState<any[]>([])
   let loanLiquidateStart: any[] = []
-  // let loansExit: any[] = []
   const currentBlock = await ethfEthersProvaider.getBlockNumber()
-  const START_BLOCK = currentBlock - 10000
+  const START_BLOCK = currentBlock - 60447
   const hedronContractWeb3 = getHedronContract(true)
   await hedronContractWeb3
     .getPastEvents("LoanLiquidateStart", {
       filter: {},
-      fromBlock: START_BLOCK - 580000,
+      fromBlock: START_BLOCK - 50000,
       toBlock: "latest",
     })
     .then(events => {
@@ -29,7 +27,7 @@ export async function getLiquidationAuctionsFair() {
   await hedronContractWeb3
     .getPastEvents("LoanLiquidateExit", {
       filter: {},
-      fromBlock: START_BLOCK - 580000,
+      fromBlock: START_BLOCK - 50000,
       toBlock: "latest",
     })
     .then(events => {
@@ -93,8 +91,8 @@ export async function getLiquidationListFair(loans: any[]) {
     }
     loanResult.push(result)
   })
-  await sleep(7000)
-  console.log("ETHF loanResult", loanResult.length)
+  await sleep(5000)
+  console.log("ETHF loanLiquidation + hsiContrac Result: ", loanResult.length)
 
   return loanResult
 }
@@ -200,7 +198,7 @@ export async function getAuctionsFair() {
     }
     loansResult.push(result)
   })
-  await sleep(15000)
+  await sleep(12000)
   loanStart = loansResult.filter(item => item.shareList.isLoaned === true)
   //   await sleep(1000)
   console.log("Loan Result ETHF:", loanStart.length, loansResult.length)

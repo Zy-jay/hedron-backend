@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/default
+import { Interface } from "ethers"
 import mongoose from "mongoose"
+import HDRN_ABI from "./abis/hedron.json"
 import {
   getAuctions,
   getHexCurrentDay,
@@ -52,6 +54,7 @@ async function updateLoansLiquidate() {
                 100
               ).toFixed(2),
             ),
+            currentBidder: item.liquidationList.liquidator.toString(),
             currentBid: Number(item.liquidationList.bidAmount),
             mintableHdrn: Number(
               (Number(await item.share.stakeShares) *
@@ -176,6 +179,37 @@ export async function App() {
       ethwEthersProvaider.on("block", async (blockNumber: number) => {
         console.log("new block " + blockNumber)
         lastBlockNumber = blockNumber
+        await hedronContractWeb3
+          .getPastEvents("LoanLiquidateBid", {
+            filter: {},
+            fromBlock: blockNumber,
+            toBlock: "latest",
+          })
+          .then(async events => {
+            if (events.length > 0) {
+              // eslint-disable-next-line for-direction
+              for (let i = 0; i < events.length; i++) {
+                console.log("EVENT LoanLiquidateBid:", events[i].returnValues)
+                const transaction: any =
+                  await ethwEthersProvaider.getTransaction(
+                    events[i].transactionHash,
+                  )
+                const iface = new Interface(HDRN_ABI)
+                const data = transaction.data.toString()
+                const txData = iface.parseTransaction({ data })
+                console.log(Number(txData?.args[1]))
+                const doc = await Loan_liquidate.findOne({
+                  stakeId: events[i].returnValues.stakeId,
+                })
+                doc &&
+                  ((doc.currentBid = Number(txData?.args[1])),
+                  (doc.liquidator = transaction.from))
+
+                await doc?.save()
+                // Loan_liquidate.findOneAndUpdate({}, {})
+              }
+            }
+          })
         await hedronContractWeb3
           .getPastEvents("LoanLiquidateExit", {
             filter: {},
