@@ -23,7 +23,7 @@ async function updateLoansLiquidate() {
   try {
     const hexCurrentDay = await getHexCurrentDay()
     const loanLiquidateStart = await getLiquidationAuctions()
-    await sleep(3000)
+    await sleep(5000)
     const hsiCount = await getHsiCount()
     console.log("Vot", loanLiquidateStart.length, Number(hsiCount))
     if (loanLiquidateStart.length === Number(hsiCount)) {
@@ -31,7 +31,7 @@ async function updateLoansLiquidate() {
       mongoose.set("strictQuery", true)
       const loanLiquidateResults = await getLiquidationList(loanLiquidateStart)
       const deletItem = await Loan_liquidate.deleteMany({ type: 1 })
-      await sleep(3000, deletItem)
+      await sleep(4000, deletItem)
       loanLiquidateResults.map(async item => {
         try {
           const loanLiquidate = new Loan_liquidate({
@@ -88,10 +88,9 @@ async function updateLoans() {
   try {
     const hexCurrentDay = await getHexCurrentDay()
     const loans = await getAuctions()
-    await sleep(1000)
+    await sleep(5000)
     // const hsiCount = await getHsiCount()
     //   console.log("Vot", loans[0].shareList)
-    await sleep(2000)
     await mongoose.connect(DB_URL)
     mongoose.set("strictQuery", true)
     loans.map(async item => {

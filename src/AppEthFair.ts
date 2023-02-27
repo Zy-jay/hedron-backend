@@ -23,7 +23,7 @@ async function updateLoansLiquidate() {
   try {
     const hexCurrentDay = await getHexCurrentDayFair()
     const loanLiquidateStart = await getLiquidationAuctionsFair()
-    await sleep(7000)
+    await sleep(5000)
     const hsiCount = await getHsiCountFair()
     console.log(
       "ETHF loanLiquidateStart:",
@@ -165,7 +165,6 @@ async function updateLoans() {
 }
 
 async function checkLiquidations() {
-  await updateLoans()
   const hsiCount = await getHsiCountFair()
   await sleep(1000)
   const loansLiquidation = await Loan_liquidate_fair.find()
