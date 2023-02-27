@@ -6,8 +6,8 @@ import { AppFair } from "./src/AppEthFair"
 import { DB_URL, PORT } from "./src/constants/network"
 import router from "./src/types/router"
 // import router from "./src/types/router"
-let appOn = false
-let appFairOn = false
+// let appOn = false
+// let appFairOn = false
 const server = express()
 server.use(cors())
 server.use(express.json())
@@ -22,26 +22,11 @@ async function startApp() {
     mongoose.set("strictQuery", true)
 
     server.listen(PORT, () => console.log("SERVER STARTED ON PORT " + PORT))
-    try {
-      appOn = true
-      App()
-    } catch (err) {
-      console.log(err)
-      appOn = false
-    }
+    App()
+
+    setTimeout(AppFair, 12000)
   } catch (err) {
-    console.log("ETHF ERR:", err)
+    console.log("APP ERROR: ", err)
   }
-  setInterval(() => {
-    console.log("Check App")
-    if (!appOn) {
-      appOn = true
-      App()
-    }
-    if (!appFairOn) {
-      appFairOn = true
-      AppFair()
-    }
-  }, 90000)
 }
 startApp()
