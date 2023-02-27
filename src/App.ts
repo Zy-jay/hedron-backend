@@ -27,11 +27,11 @@ async function updateLoansLiquidate() {
     const hsiCount = await getHsiCount()
     console.log("Vot", loanLiquidateStart.length, Number(hsiCount))
     if (loanLiquidateStart.length === Number(hsiCount)) {
-      const loanLiquidateResults = await getLiquidationList(loanLiquidateStart)
-      const deletItem = await Loan_liquidate.deleteMany({ type: 1 })
-      await sleep(2000, deletItem)
       await mongoose.connect(DB_URL)
       mongoose.set("strictQuery", true)
+      const loanLiquidateResults = await getLiquidationList(loanLiquidateStart)
+      const deletItem = await Loan_liquidate.deleteMany({ type: 1 })
+      await sleep(3000, deletItem)
       loanLiquidateResults.map(async item => {
         try {
           const loanLiquidate = new Loan_liquidate({
@@ -169,7 +169,6 @@ export async function App() {
     await sleep(500)
     console.log("loansLiquidation: ", loansLiquidation.length)
   } else {
-    Loan_liquidate.deleteMany()
     await sleep(1000, "Liquqdations OK")
   }
   const hedronContractWeb3 = getHedronContract()
@@ -216,9 +215,14 @@ export async function App() {
             fromBlock: blockNumber,
             toBlock: "latest",
           })
-          .then(events => {
+          .then(async events => {
             if (events.length > 0) {
-              updateLoansLiquidate()
+              console.log("NEW EVENT - Exit:", events.length, events[0])
+              for (let i = 0; i < events.length; i++) {
+                await Loan_liquidate.deleteMany({
+                  stakeId: events[i].returnValues.stakeId,
+                })
+              }
             }
           })
         await hedronContractWeb3
@@ -229,6 +233,10 @@ export async function App() {
           })
           .then(async events => {
             if (events.length > 0) {
+              console.log("NEW EVENT: Liquidation Start:")
+              for (let i = 0; i < events.length; i++) {
+                Loan.deleteMany({ stakeId: events[i].returnValues.stakeId })
+              }
               await updateLoansLiquidate()
               updateLoans()
             }

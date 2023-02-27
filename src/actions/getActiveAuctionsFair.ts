@@ -10,7 +10,7 @@ import { sleep } from "../utils/sleep"
 export async function getLiquidationAuctionsFair() {
   let loanLiquidateStart: any[] = []
   const currentBlock = await ethfEthersProvaider.getBlockNumber()
-  const START_BLOCK = currentBlock - 60447
+  const START_BLOCK = currentBlock - 70447
   const hedronContractWeb3 = getHedronContract(true)
   await hedronContractWeb3
     .getPastEvents("LoanLiquidateStart", {

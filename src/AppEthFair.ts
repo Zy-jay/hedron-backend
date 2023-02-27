@@ -34,10 +34,11 @@ async function updateLoansLiquidate() {
       const loanLiquidateResults = await getLiquidationListFair(
         loanLiquidateStart,
       )
-      const deletItem = await Loan_liquidate_fair.deleteMany({ type: 1 })
-      await sleep(2000, deletItem)
       await mongoose.connect(DB_URL)
       mongoose.set("strictQuery", true)
+      const deletItem = await Loan_liquidate_fair.deleteMany({ type: 1 })
+      await sleep(2000, deletItem)
+
       loanLiquidateResults.map(async item => {
         try {
           const loanLiquidate = new Loan_liquidate_fair({
@@ -181,7 +182,6 @@ export async function AppFair() {
     await sleep(2000)
     console.log("ETHF loansLiquidation: ", loansLiquidation.length)
   } else {
-    Loan_liquidate_fair.deleteMany()
     await sleep(1000, "ETHF Liquqdations OK")
   }
   const hedronContractWeb3 = getHedronContract(true)
@@ -199,7 +199,16 @@ export async function AppFair() {
           })
           .then(async events => {
             if (events.length > 0) {
-              await updateLoansLiquidate()
+              console.log(
+                "NEW EVENT ETHF - LoanLiquidateExit:",
+                events.length,
+                events[0].returnValues,
+              )
+              for (let i = 0; i < events.length; i++) {
+                await Loan_liquidate_fair.deleteMany({
+                  stakeId: events[i].returnValues.stakeId,
+                })
+              }
             }
           })
         await hedronContractWeb3
@@ -213,7 +222,8 @@ export async function AppFair() {
               // eslint-disable-next-line for-direction
               for (let i = 0; i < events.length; i++) {
                 console.log(
-                  "ETHF EVENT LoanLiquidateBid:",
+                  "NEW ETHF EVENT - LoanLiquidateBid:",
+                  events.lenght,
                   events[i].returnValues,
                 )
                 const transaction: any =
@@ -245,6 +255,7 @@ export async function AppFair() {
           })
           .then(async events => {
             if (events.length > 0) {
+              Loan_fair.deleteMany({ stakeId: events[0].stakeId })
               await updateLoansLiquidate()
               updateLoans()
             }

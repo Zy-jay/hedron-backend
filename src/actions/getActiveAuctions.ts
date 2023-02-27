@@ -12,7 +12,7 @@ export async function getLiquidationAuctions() {
   let loanLiquidateStart: any[] = []
   // let loansExit: any[] = []
   const currentBlock = await ethwEthersProvaider.getBlockNumber()
-  const START_BLOCK = currentBlock - 60447
+  const START_BLOCK = currentBlock - 70447
   const hedronContractWeb3 = getHedronContract()
   await hedronContractWeb3
     .getPastEvents("LoanLiquidateStart", {
