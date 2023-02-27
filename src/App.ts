@@ -152,8 +152,7 @@ async function updateLoans() {
   }
 }
 
-export async function App() {
-  updateLoans()
+async function checkLiquidations() {
   const hsiCount = await getHsiCount()
   await sleep(1000)
   const loansLiquidation = await Loan_liquidate.find()
@@ -171,6 +170,11 @@ export async function App() {
   } else {
     await sleep(1000, "Liquqdations OK")
   }
+}
+
+export async function App() {
+  await updateLoans()
+  await checkLiquidations()
   const hedronContractWeb3 = getHedronContract()
 
   const subscribeOn = () => {
@@ -188,7 +192,7 @@ export async function App() {
             if (events.length > 0) {
               // eslint-disable-next-line for-direction
               for (let i = 0; i < events.length; i++) {
-                console.log("EVENT LoanLiquidateBid:", events[i].returnValues)
+                console.log("NEW EVENT - Bid:", events[i].returnValues)
                 const transaction: any =
                   await ethwEthersProvaider.getTransaction(
                     events[i].transactionHash,
@@ -220,7 +224,7 @@ export async function App() {
               console.log("NEW EVENT - Exit:", events.length, events[0])
               for (let i = 0; i < events.length; i++) {
                 await Loan_liquidate.deleteMany({
-                  stakeId: events[i].returnValues.stakeId,
+                  stakeId: Number(events[i].returnValues.stakeId),
                 })
               }
             }
@@ -233,9 +237,11 @@ export async function App() {
           })
           .then(async events => {
             if (events.length > 0) {
-              console.log("NEW EVENT: Liquidation Start:")
+              console.log("NEW EVENT - Liquidation Start:")
               for (let i = 0; i < events.length; i++) {
-                Loan.deleteMany({ stakeId: events[i].returnValues.stakeId })
+                Loan.deleteMany({
+                  stakeId: Number(events[i].returnValues.stakeId),
+                })
               }
               await updateLoansLiquidate()
               updateLoans()
@@ -247,6 +253,8 @@ export async function App() {
       console.log(err)
     }
   }
+
+  setInterval(checkLiquidations, 380000)
 
   setInterval(async () => {
     const listenerCount = await ethwEthersProvaider.listenerCount("block")
@@ -262,5 +270,5 @@ export async function App() {
     } else {
       console.log("listenerCount:", listenerCount)
     }
-  }, 25000)
+  }, 40000)
 }

@@ -29,15 +29,6 @@ async function startApp() {
       console.log(err)
       appOn = false
     }
-    setTimeout(() => {
-      try {
-        appFairOn = true
-        AppFair()
-      } catch (err) {
-        console.log(err)
-        appFairOn = false
-      }
-    }, 60000)
   } catch (err) {
     console.log("ETHF ERR:", err)
   }
@@ -51,6 +42,6 @@ async function startApp() {
       appFairOn = true
       AppFair()
     }
-  }, 60000)
+  }, 90000)
 }
 startApp()

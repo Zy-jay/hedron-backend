@@ -164,7 +164,7 @@ async function updateLoans() {
   }
 }
 
-export async function AppFair() {
+async function checkLiquidations() {
   await updateLoans()
   const hsiCount = await getHsiCountFair()
   await sleep(1000)
@@ -184,6 +184,11 @@ export async function AppFair() {
   } else {
     await sleep(1000, "ETHF Liquqdations OK")
   }
+}
+
+export async function AppFair() {
+  await updateLoans()
+  await checkLiquidations()
   const hedronContractWeb3 = getHedronContract(true)
 
   const subscribeOn = () => {
@@ -235,7 +240,7 @@ export async function AppFair() {
                 const txData = iface.parseTransaction({ data })
                 console.log(Number(txData?.args[1]))
                 const doc = await Loan_liquidate_fair.findOne({
-                  stakeId: events[i].returnValues.stakeId,
+                  stakeId: Number(events[i].returnValues.stakeId),
                 })
                 doc &&
                   ((doc.currentBid = Number(txData?.args[1])),
@@ -255,7 +260,9 @@ export async function AppFair() {
           })
           .then(async events => {
             if (events.length > 0) {
-              Loan_fair.deleteMany({ stakeId: events[0].stakeId })
+              Loan_fair.deleteMany({
+                stakeId: Number(events[0].returnValues.stakeId),
+              })
               await updateLoansLiquidate()
               updateLoans()
             }
@@ -266,6 +273,7 @@ export async function AppFair() {
       console.log("ETHF_0:", err)
     }
   }
+  setInterval(checkLiquidations, 380000)
 
   setInterval(async () => {
     try {
@@ -273,12 +281,12 @@ export async function AppFair() {
       // console.log("listenerCount:", listenerCount)
       const currentBlock = await ethfEthersProvaider.getBlockNumber()
       if (lastBlockNumber + 1 < currentBlock) {
-        console.log("ETHF removeAllListeners...")
+        console.log("ETHF remove AllListeners...")
         ethfEthersProvaider.removeAllListeners()
       }
       if (!listenerCount && listenerCount === 0) {
         subscribeOn()
-        console.log("ETHF Restart: subscribeOn", listenerCount)
+        console.log("ETHF Restart: subscribeOn")
       } else {
         console.log("ETHF listenerCount:", listenerCount)
       }
