@@ -172,10 +172,10 @@ async function checkLiquidations() {
 }
 
 export async function App() {
-  await updateLoans()
   await checkLiquidations()
+  await sleep(5000)
   const hedronContractWeb3 = getHedronContract()
-
+  await updateLoans()
   const subscribeOn = () => {
     try {
       ethwEthersProvaider.on("block", async (blockNumber: number) => {

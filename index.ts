@@ -24,7 +24,7 @@ async function startApp() {
     server.listen(PORT, () => console.log("SERVER STARTED ON PORT " + PORT))
     App()
 
-    setTimeout(AppFair, 12000)
+    setTimeout(AppFair, 120000)
   } catch (err) {
     console.log("APP ERROR: ", err)
   }
